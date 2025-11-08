@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="mb-4 text-warning">Admin Panel: Book Management & Loans</h1>
+
+<div class="row">
+    <!-- Column 1: Add New Book Form -->
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header h5 bg-dark text-light">Add New Book</div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('add_book') }}">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="author" class="form-label">Author</label>
+                        <input type="text" class="form-control" id="author" name="author" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="isbn" class="form-label">ISBN</label>
+                        <input type="text" class="form-control" id="isbn" name="isbn">
+                    </div>
+                    <div class="mb-3">
+                        <label for="digital_link" class="form-label">Cloud Digital Link (URL)</label>
+                        <input type="url" class="form-control" id="digital_link" name="digital_link" placeholder="https://example.com/book-file.pdf" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Add Book</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Column 2: Active Loans & All Books -->
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header h5 bg-info text-dark">Active Loans ({{ loans | length }})</div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th>Loan ID</th>
+                                <th>Student</th>
+                                <th>Book Title</th>
+                                <th>Due Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for loan in loans %}
+                            <tr>
+                                <td>{{ loan.id }}</td>
+                                <td>{{ loan.student.username }}</td>
+                                <td>{{ loan.book_loaned.title }}</td>
+                                <td class="text-danger">{{ loan.due_date.strftime('%Y-%m-%d') }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center">No active loans at this time.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header h5 bg-dark text-light">All Books ({{ books | length }})</div>
+            <div class="card-body p-0">
+                 <div class="table-responsive">
+                    <table class="table table-hover table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for book in books %}
+                            <tr>
+                                <td>{{ book.title }}</td>
+                                <td>{{ book.author }}</td>
+                                <td>
+                                    <span class="badge bg-{% if book.available %}success{% else %}danger{% endif %}">
+                                        {% if book.available %}Available{% else %}Borrowed{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('delete_book', book_id=book.id) }}" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete {{ book.title }}? This cannot be undone.')">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
