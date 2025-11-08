@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="mb-4">My Borrowed Books</h1>
+    
+    {% if loans %}
+        <ul class="list-group">
+            {% for loan in loans %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ loan.book_loaned.title }}</strong> by {{ loan.book_loaned.author }}
+                    <br>
+                    <small class="text-muted">Due: {{ loan.due_date.strftime('%Y-%m-%d') }}</small>
+                </div>
+                <div>
+                    <a href="{{ loan.book_loaned.digital_link }}" target="_blank" class="btn btn-info btn-sm me-2">Read E-Book</a>
+                    
+                    <form method="POST" action="{{ url_for('return_book', loan_id=loan.id) }}" class="d-inline">
+                        <button type="submit" class="btn btn-warning btn-sm">Return</button>
+                    </form>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="alert alert-warning">You currently have no active loans.</div>
+    {% endif %}
+{% endblock %}
