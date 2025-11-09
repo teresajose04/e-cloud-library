@@ -114,11 +114,11 @@ def logout():
 
 # --- Student Routes ---
 
+
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    # Only show available books to students
-    books = Book.query.filter_by(available=True).all()
+    books = Book.query.all()
     return render_template('dashboard.html', books=books)
 
 @app.route('/borrow/<int:book_id>', methods=['POST'])
